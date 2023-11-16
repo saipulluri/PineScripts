@@ -1,0 +1,45 @@
+//Previous 2-QMWD High Low levels drawn 
+//@run--20122021
+//@version=4
+study(title="LEVELS", overlay=true)
+
+
+pmo = security(syminfo.tickerid,'M', high[2])
+pmh = security(syminfo.tickerid,'M', high[1])
+pmp = security(syminfo.tickerid,'M', low[2])
+pml = security(syminfo.tickerid,'M', low[1])
+pqo = security(syminfo.tickerid,'3M', high[2])
+pqh = security(syminfo.tickerid,'3M', high[1])
+pqp = security(syminfo.tickerid,'3M', low[2])
+pql = security(syminfo.tickerid,'3M', low[1])
+pwo = security(syminfo.tickerid,'W', high[2])
+pwh = security(syminfo.tickerid,'W', high[1])
+pwp = security(syminfo.tickerid,'W', low[2])
+pwl = security(syminfo.tickerid,'W', low[1])
+pdo = security(syminfo.tickerid,'D', high[2])
+pdh = security(syminfo.tickerid,'D', high[1])
+pdp = security(syminfo.tickerid,'D', low[2])
+pdl = security(syminfo.tickerid,'D', low[1])
+d2c = security(syminfo.tickerid,'D', close[2])
+d1c = security(syminfo.tickerid,'D', close[1])
+
+plot(pqh,title='Prev Quarterly high', trackprice=true,editable=true,color=color.blue, offset=-9999, linewidth=3)
+plot(pql,title='Prev Quarterly low', trackprice=true,editable=true,color=color.blue, offset=-9999, linewidth=3)
+//plot(pqo,title='Prev 2Quarterly high', trackprice=true,editable=true,color=color.blue, offset=-9999, linewidth=3)
+//plot(pqp,title='Prev 2Quarterly low', trackprice=true,editable=true,color=color.blue, offset=-9999, linewidth=3)
+plot(pmh,title='Prev Monthly high', trackprice=true,editable=true,color=color.orange, offset=-9999, linewidth=3)
+plot(pml,title='Prev Monthly low', trackprice=true,editable=true,color=color.orange, offset=-9999, linewidth=3)
+//plot(pmo,title='Prev 2Monthly high', trackprice=true,editable=true,color=color.orange, offset=-9999, linewidth=3)
+//plot(pmp,title='Prev 2Monthly low', trackprice=true,editable=true,color=color.orange, offset=-9999, linewidth=3)
+plot(pwh,title='Prev Weekly high', trackprice=true,editable=true,color=color.purple, offset=-9999, linewidth=3)
+plot(pwl,title='Prev Weekly low', trackprice=true,editable=true,color=color.purple, offset=-9999, linewidth=3)
+//plot(pwo,title='Prev 2Weekly high', trackprice=true,editable=true,color=color.purple, offset=-9999, linewidth=3)
+//plot(pwp,title='Prev 2Weekly low', trackprice=true,editable=true,color=color.purple, offset=-9999, linewidth=3)
+plot(pdh,title='Prev Daily high', trackprice=true,editable=true,color=color.red, offset=-9999, linewidth=3)
+plot(pdl,title='Prev Daily low', trackprice=true,editable=true,color=color.red, offset=-9999, linewidth=3)
+//plot(pdo,title='Prev 2Daily high', trackprice=true,editable=true,color=color.red, offset=-9999, linewidth=3)
+//plot(pdp,title='Prev 2Daily low', trackprice=true,editable=true,color=color.red, offset=-9999, linewidth=3)
+plot(d2c,title='2 Day Close', trackprice=true,editable=true,color=color.black, offset=-9999, linewidth=3)
+plot(d1c,title='1 Day Close', trackprice=true,editable=true,color = color.black, offset=-9999, linewidth=3)
+
+

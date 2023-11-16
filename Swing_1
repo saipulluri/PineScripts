@@ -1,0 +1,30 @@
+//@version=5
+
+// Buy when EMA3 moves down of all 3 EMA's & sell when EMA3 moves up of all 3 EMA's 
+
+indicator(title="Swing2", shorttitle="EMA", overlay=true, timeframe="", timeframe_gaps=true)
+len1 = input.int(8, minval=1, title="Length1")
+src1 = input(close, title="Source1")
+offset1 = input.int(title="Offset1", defval=0, minval=-500, maxval=500)
+out1 = ta.ema(src1, len1)
+plot(out1, title="EMA", color=color.red, offset=offset1, linewidth = 2)
+
+len2 = input.int(13, minval=1, title="Length2")
+src2 = input(close, title="Source2")
+offset2 = input.int(title="Offset2", defval=0, minval=-500, maxval=500)
+out2 = ta.ema(src2, len2)
+plot(out2, title="EMA1", color=color.green, offset=offset2)
+
+len3 = input.int(21, minval=1, title="Length3")
+src3 = input(close, title="Source3")
+offset3 = input.int(title="Offset3", defval=0, minval=-500, maxval=500)
+out3 = ta.ema(src3, len3)
+plot(out3, title="EMA2", color=color.blue, offset=offset3)
+
+len4 = input.int(55, minval=1, title="Length4")
+src4 = input(close, title="Source4")
+offset4 = input.int(title="Offset4", defval=0, minval=-500, maxval=500)
+out4 = ta.ema(src4, len4)
+plot(out4, title="EMA3", color=color.black, offset=offset4, linewidth = 2)
+
+

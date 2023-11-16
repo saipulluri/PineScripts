@@ -1,0 +1,178 @@
+//@version=5
+//Fib Levels 
+
+
+indicator(title='LEVEL ALL', overlay=true)
+
+pmo = request.security(syminfo.tickerid, 'M', high[2])
+pmh = request.security(syminfo.tickerid, 'M', high[1])
+pmp = request.security(syminfo.tickerid, 'M', low[2])
+pml = request.security(syminfo.tickerid, 'M', low[1])
+pqo = request.security(syminfo.tickerid, '3M', high[2])
+pqh = request.security(syminfo.tickerid, '3M', high[1])
+pqp = request.security(syminfo.tickerid, '3M', low[2])
+pql = request.security(syminfo.tickerid, '3M', low[1])
+pwo = request.security(syminfo.tickerid, 'W', high[2])
+pwh = request.security(syminfo.tickerid, 'W', high[1])
+pwp = request.security(syminfo.tickerid, 'W', low[2])
+pwl = request.security(syminfo.tickerid, 'W', low[1])
+pdo = request.security(syminfo.tickerid, 'D', high[2])
+pdh = request.security(syminfo.tickerid, 'D', high[1])
+pdp = request.security(syminfo.tickerid, 'D', low[2])
+pdl = request.security(syminfo.tickerid, 'D', low[1])
+d2c = request.security(syminfo.tickerid, 'D', close[2])
+d1c = request.security(syminfo.tickerid, 'D', close[1])
+
+
+plot(pmh, title='Prev Monthly high', trackprice=true, editable=true, color=color.new(color.yellow, 0), offset=-9999, linewidth=3)
+plot(pml, title='Prev Monthly low', trackprice=true, editable=true, color=color.new(color.yellow, 0), offset=-9999, linewidth=3)
+plot(pmo, title='Prev 2Monthly high', trackprice=true, editable=true, color=color.new(color.yellow, 0), offset=-9999, linewidth=3)
+plot(pmp, title='Prev 2Monthly low', trackprice=true, editable=true, color=color.new(color.yellow, 0), offset=-9999, linewidth=3)
+plot(pqh, title='Prev Quarterly high', trackprice=true, editable=true, color=color.new(color.green, 0), offset=-9999, linewidth=3)
+plot(pql, title='Prev Quarterly low', trackprice=true, editable=true, color=color.new(color.green, 0), offset=-9999, linewidth=3)
+plot(pqo, title='Prev 2Quarterly high', trackprice=true, editable=true, color=color.new(color.green, 0), offset=-9999, linewidth=3)
+plot(pqp, title='Prev 2Quarterly low', trackprice=true, editable=true, color=color.new(color.green, 0), offset=-9999, linewidth=3)
+plot(pwh, title='Prev Weekly high', trackprice=true, editable=true, color=color.new(color.blue, 0), offset=-9999, linewidth=3)
+plot(pwl, title='Prev Weekly low', trackprice=true, editable=true, color=color.new(color.blue, 0), offset=-9999, linewidth=3)
+plot(pwo, title='Prev 2Weekly high', trackprice=true, editable=true, color=color.new(color.blue, 0), offset=-9999, linewidth=3)
+plot(pwp, title='Prev 2Weekly low', trackprice=true, editable=true, color=color.new(color.blue, 0), offset=-9999, linewidth=3)
+plot(pdh, title='Prev Daily high', trackprice=true, editable=true, color=color.new(color.red, 0), offset=-9999, linewidth=3)
+plot(pdl, title='Prev Daily low', trackprice=true, editable=true, color=color.new(color.red, 0), offset=-9999, linewidth=3)
+plot(pdo, title='Prev 2Daily high', trackprice=true, editable=true, color=color.new(color.red, 0), offset=-9999, linewidth=3)
+plot(pdp, title='Prev 2Daily low', trackprice=true, editable=true, color=color.new(color.red, 0), offset=-9999, linewidth=3)
+plot(d2c, title='2 Day Close', trackprice=true, editable=true, color=color.new(color.black, 0), offset=-9999, linewidth=3)
+plot(d1c, title='1 Day Close', trackprice=true, editable=true, color=color.new(color.black, 0), offset=-9999, linewidth=3)
+// By: JustUncleL
+// Date: 24-Feb-2017
+//
+// Description:
+//   Automatically draw Fibonacci levels based on the previous day's
+//   highest(100%) and lowest(0%) points.
+//   Timeframe is just a text string and is not checked, so needs to be a
+//   valid resolution eg: 60, 120, 240, 360, 480, 720, 1D, 1W, 1M, 2D, 2W, 3M
+//   LEVELS:
+//   - Green = 100% - 200% Levels
+//   - Blue  = 0 - 100% Levels
+//   - Red   = -100% - 0 Levels
+//
+//   Optionally display historical Daily Levels.
+//
+// Refrences:
+//   - Automatic Daily Fibonacci v# by JustUncleL
+//
+// Modifications:
+//   R3 - Work around for Pivot now option.
+//      - Updates for V3 Pinescript.
+//   R2 - Add extra level for Pivot Now Set.
+//   R1 - Original
+//   31-Aug-2017
+//      - Changed 0.764 level to the more accepted 0.786 (sqr of 0.618)
+//
+//   R3.1 10-Sep-2017
+//      - Modified the way "most recent" only is display, now only show levels
+//        in the current day's price action.
+//      - Added option to display current day extension Fibs.
+//
+//
+
+AutoTimeFrame = input(false)
+TimeFrame = input('1D', title='Timeframe For Fibonacci Levels')
+pivotNow = input(defval=false, title='Only show most recent pivotal set')
+sExt = input(defval=false, title='Show extended Fib Levels on current pivotal set')
+
+// Calculate start point
+pivotTimeFrame = AutoTimeFrame ? timeframe.ismonthly ? '12M' : timeframe.isweekly ? '3M' : timeframe.isdaily ? '1M' : timeframe.isintraday ? timeframe.multiplier >= 1 ? '1D' : TimeFrame : TimeFrame : TimeFrame
+
+//
+// Start Fib levels from Previous Day's High and Low 
+h = high[1]
+l = low[1]
+
+H1000 = request.security(syminfo.ticker, pivotTimeFrame, h, barmerge.gaps_off, barmerge.lookahead_on)
+L0000 = request.security(syminfo.ticker, pivotTimeFrame, l, barmerge.gaps_off, barmerge.lookahead_on)
+
+// Test for new Daily Session or start of new month for Daily.
+start = request.security(syminfo.ticker, TimeFrame, time, barmerge.gaps_off, barmerge.lookahead_on)
+newDay = ta.change(start)
+
+
+// Find the last candle time
+last = request.security(syminfo.ticker, pivotTimeFrame, ta.valuewhen(barstate.islast, time, 0), barmerge.gaps_off, barmerge.lookahead_on)
+lastDay = start >= last
+
+
+//plotshape(H1000,location=location.top)
+//plotshape(L0000,location=location.top)
+
+// Get Full range from previous Daily High and Low
+RANGE = H1000 - L0000
+Z0000 = L0000
+// Calculate higher fib levels
+H3382 = H1000 + RANGE * 2.382
+H3618 = H1000 + RANGE * 2.618
+
+// Calculate higher fib levels
+H2382 = H1000 + RANGE * 1.382
+H2618 = H1000 + RANGE * 1.618
+
+// Calculate higher fib levels
+H1382 = H1000 + RANGE * 0.382
+H1618 = H1000 + RANGE * 0.618
+
+
+
+// Calculate centre fib levels
+Z0382 = Z0000 + RANGE * 0.382
+Z0618 = Z0000 + RANGE * 0.618
+
+// Calculate lower fib levels
+L_382 = L0000 - RANGE * 0.382
+L_618 = L0000 - RANGE * 0.618
+
+// Calculate lower fib levels
+L1382 = L0000 - RANGE * 1.382
+L1618 = L0000 - RANGE * 1.618
+
+
+// Calculate lower fib levels
+L2382 = L0000 - RANGE * 2.382
+L2618 = L0000 - RANGE * 2.618
+
+
+
+
+// Constants for pivotNow.
+
+plot(lastDay and pivotNow ? Z0382 : na, title='38.2%', color=color.new(color.black, 0), linewidth=2)
+
+plot(lastDay and pivotNow ? Z0618 : na, title='61.8%', color=color.new(color.black, 0), linewidth=2)
+
+plot(lastDay and pivotNow ? H1382 : na, title='138.2%', color=color.new(color.black, 0), linewidth=2)
+plot(lastDay and pivotNow ? H1618 : na, title='161.8%', color=color.new(color.black, 0), linewidth=2)
+plot(lastDay and pivotNow ? H2382 : na, title='238.2%', color=color.new(color.black, 0), linewidth=2)
+plot(lastDay and pivotNow ? H2618 : na, title='261.8%', color=color.new(color.black, 0), linewidth=2)
+plot(lastDay and pivotNow ? L_382 : na, title='-38.2%', color=color.new(color.black, 0), linewidth=2)
+plot(lastDay and pivotNow ? L_618 : na, title='-61.8%', color=color.new(color.black, 0), linewidth=2)
+plot(lastDay and pivotNow ? L1382 : na, title='-138.2%', color=color.new(color.black, 0), linewidth=2)
+plot(lastDay and pivotNow ? L1618 : na, title='-161.8%', color=color.new(color.black, 0), linewidth=2)
+//
+// Plot all days.
+plot(newDay or pivotNow ?na: Z0382, title='38.2%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: Z0618, title='61.8%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: H1382, title='138.2%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: H1618, title='161.8%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: H2382, title='238.2%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: H2618, title='261.8%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: H3382, title='338.2%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: H3618, title='361.8%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: L_382, title='-38.2%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: L_618, title='-61.8%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: L1382, title='-138.2%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: L1618, title='-161.8%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: L2382, title='-238.2%', color=color.new(color.black, 0), linewidth=2)
+plot(newDay or pivotNow ?na: L2618, title='-261.8%', color=color.new(color.black, 0), linewidth=2)
+
+//
+//EOF.
+
+

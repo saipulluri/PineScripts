@@ -1,0 +1,53 @@
+//Previous 2-QMWD High Low levels drawn 
+//@run--20122021
+//@version=5
+indicator(title='LEVELS', overlay=true)
+
+
+pmo = request.security(syminfo.tickerid, 'M', high[2])
+pmh = request.security(syminfo.tickerid, 'M', high[1])
+pmp = request.security(syminfo.tickerid, 'M', low[2])
+pml = request.security(syminfo.tickerid, 'M', low[1])
+pqo = request.security(syminfo.tickerid, '3M', high[2])
+pqh = request.security(syminfo.tickerid, '3M', high[1])
+pqp = request.security(syminfo.tickerid, '3M', low[2])
+pql = request.security(syminfo.tickerid, '3M', low[1])
+pwo = request.security(syminfo.tickerid, 'W', high[2])
+pwh = request.security(syminfo.tickerid, 'W', high[1])
+pwp = request.security(syminfo.tickerid, 'W', low[2])
+pwl = request.security(syminfo.tickerid, 'W', low[1])
+pdo = request.security(syminfo.tickerid, 'D', high[2])
+pdh = request.security(syminfo.tickerid, 'D', high[1])
+pdp = request.security(syminfo.tickerid, 'D', low[2])
+pdl = request.security(syminfo.tickerid, 'D', low[1])
+d2c = request.security(syminfo.tickerid, 'D', close[2])
+d1c = request.security(syminfo.tickerid, 'D', close[1])
+
+plot(pqh, title='Prev Quarterly high', trackprice=true, editable=true, color=color.new(color.blue, 0), offset=-9999, linewidth=3, display = display.price_scale)
+plot(pql, title='Prev Quarterly low', trackprice=true, editable=true, color=color.new(color.blue, 0), offset=-9999, linewidth=3)
+//plot(pqo,title='Prev 2Quarterly high', trackprice=true,editable=true,color=color.blue, offset=-9999, linewidth=3)
+//plot(pqp,title='Prev 2Quarterly low', trackprice=true,editable=true,color=color.blue, offset=-9999, linewidth=3)
+plot(pmh, title='Prev Monthly high', trackprice=true, editable=true, color=color.new(color.orange, 0), offset=-9999, linewidth=3)
+plot(pml, title='Prev Monthly low', trackprice=true, editable=true, color=color.new(color.orange, 0), offset=-9999, linewidth=3)
+//plot(pmo,title='Prev 2Monthly high', trackprice=true,editable=true,color=color.orange, offset=-9999, linewidth=3)
+//plot(pmp,title='Prev 2Monthly low', trackprice=true,editable=true,color=color.orange, offset=-9999, linewidth=3)
+plot(pwh, title='Prev Weekly high', trackprice=true, editable=true, color=color.new(color.purple, 0), offset=-9999, linewidth=3)
+plot(pwl, title='Prev Weekly low', trackprice=true, editable=true, color=color.new(color.purple, 0), offset=-9999, linewidth=3)
+//plot(pwo,title='Prev 2Weekly high', trackprice=true,editable=true,color=color.purple, offset=-9999, linewidth=3)
+//plot(pwp,title='Prev 2Weekly low', trackprice=true,editable=true,color=color.purple, offset=-9999, linewidth=3)
+plot(pdh, title='Prev Daily high', trackprice=true, editable=true, color=color.new(color.red, 0), offset=-9999, linewidth=3)
+plot(pdl, title='Prev Daily low', trackprice=true, editable=true, color=color.new(color.red, 0), offset=-9999, linewidth=3)
+//plot(pdo,title='Prev 2Daily high', trackprice=true,editable=true,color=color.red, offset=-9999, linewidth=3)
+//plot(pdp,title='Prev 2Daily low', trackprice=true,editable=true,color=color.red, offset=-9999, linewidth=3)
+plot(d2c, title='2 Day Close', trackprice=true, editable=true, color=color.new(color.black, 0), offset=-9999, linewidth=3)
+plot(d1c, title='1 Day Close', trackprice=true, editable=true, color=color.new(color.black, 0), offset=-9999, linewidth=3)
+
+//ATR for Daily
+
+length = input.int(title="Length", defval=14, minval=1)
+ma_function(source, length) => ta.rma(source, length)
+
+atr_d = request.security(syminfo.tickerid, 'D', (ma_function(ta.tr(true), length)))
+
+plot(atr_d , title = "ATR", color=color.new(#B71C1C, 0))
+
