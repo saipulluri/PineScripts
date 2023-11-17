@@ -114,15 +114,6 @@ if barstate.islast
 //line.delete(line_bear_sup[1])
 
 
-len1 = input.int(title="Length", defval=14, minval=1)
-smoothing = input.string(title="Smoothing", defval="RMA", options=["RMA", "SMA", "EMA", "WMA"])
-ma_function(source, len1) =>
-	switch smoothing
-		"RMA" => ta.rma(source, len1)
-		"SMA" => ta.sma(source, len1)
-		"EMA" => ta.ema(source, len1)
-		=> ta.wma(source, len1)
-
-a = false 
-plotchar(ma_function(ta.tr(true), len1), title = "ATR",char="", location=location.top, color = color.red)
+atr_daily = request.security(syminfo.tickerid, "D", ta.atr(14))
+plotchar(atr_daily, title = "ATR",char="", location=location.top, color = color.red)
 
