@@ -115,5 +115,5 @@ if barstate.islast
 
 
 atr_daily = request.security(syminfo.tickerid, "D", ta.atr(14))
-plotchar(atr_daily, title = "ATR",char="", location=location.top, color = color.red)
+plotchar(atr_daily, title = "ATR",char="", display=display.status_line,, color = color.red)
 
